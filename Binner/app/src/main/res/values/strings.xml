@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Binner</string>
+    <string name="send">Send</string>
+    <string name="enter_bin">Enter BIN</string>
+    <string name="title_scheme">SCHEME/NETWORK</string>
+    <string name="title_brand">BRAND</string>
+    <string name="title_length">LENGTH</string>
+    <string name="title_luhn">LUHN</string>
+    <string name="title_country">COUNTRY</string>
+    <string name="title_type">TYPE</string>
+    <string name="title_prepaid">PREPAID</string>
+    <string name="title_bank">BANK</string>
+    <string name="no">No</string>
+
+
+
+    <string name="descr_history_screen">History Screen</string>
+</resources>

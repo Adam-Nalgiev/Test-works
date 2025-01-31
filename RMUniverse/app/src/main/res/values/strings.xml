@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">R&amp;M Universe</string>
+    <string name="watch_episodes">Watch episodes</string>
+    <string name="status_alive">ALIVE</string>
+    <string name="status_dead">DEAD</string>
+    <string name="status_unknown">UNKNOWN</string>
+    <string name="characters">Characters</string>
+
+    <string name="descr_character_image">Character Image</string>
+    <string name="descr_ic_location">Location Icon</string>
+    <string name="descr_ic_play">Play Icon</string>
+</resources>
