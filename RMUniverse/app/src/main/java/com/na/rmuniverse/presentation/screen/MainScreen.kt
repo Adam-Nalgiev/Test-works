@@ -23,6 +23,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -144,6 +145,7 @@ private fun CharacterItem(
     }
 }
 
+@NonRestartableComposable
 @Composable
 private fun CharacterImage(
     imageUrl: String,
@@ -159,6 +161,7 @@ private fun CharacterImage(
     )
 }
 
+@NonRestartableComposable
 @Composable
 private fun CharacterInfo(
     name: String,
@@ -187,6 +190,7 @@ private fun CharacterInfo(
     }
 }
 
+@NonRestartableComposable
 @Composable
 private fun CharacterAliveStatus(
     status: String,
@@ -222,6 +226,7 @@ private fun CharacterAliveStatus(
     }
 }
 
+@NonRestartableComposable
 @Composable
 private fun EpisodesButton(
     context: Context = LocalContext.current,
@@ -250,6 +255,7 @@ private fun EpisodesButton(
 
 }
 
+@NonRestartableComposable
 @Composable
 private fun LocationText(
     text: String,
@@ -271,6 +277,7 @@ private fun LocationText(
         )
     }
 }
+
 
 @Composable
 private fun BasicText(
