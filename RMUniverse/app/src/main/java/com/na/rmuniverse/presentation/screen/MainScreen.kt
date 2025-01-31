@@ -65,6 +65,7 @@ fun CharactersListScreen(
         modifier = modifier
             .fillMaxSize()
             .padding(paddingValues)
+            .background(Color.White)
     ) {
         Column {
 
