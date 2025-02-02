@@ -13,6 +13,9 @@ data class BinInfoDbo(
     @ColumnInfo(name = "id")
     val id: Int?,
 
+    @ColumnInfo(name = "bin")
+    val bin: String,
+
     @Embedded
     override val number: NumberInfoDbo?,
 

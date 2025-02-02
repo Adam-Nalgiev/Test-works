@@ -13,6 +13,6 @@
     <string name="no">No</string>
 
 
-
+    <string name="descr_back_button">Back to Request screen</string>
     <string name="descr_history_screen">History Screen</string>
 </resources>

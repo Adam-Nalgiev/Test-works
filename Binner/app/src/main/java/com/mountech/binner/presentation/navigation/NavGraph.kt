@@ -1,7 +1,6 @@
 package com.mountech.binner.presentation.navigation
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -19,19 +18,20 @@ fun NavGraph(
     NavHost(
         navController = navHostController,
         startDestination = Screen.Request,
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
     ) {
         composable<Screen.Request> {
             Request(
                 { navigateTo -> navHostController.navigate(navigateTo) },
-                paddingValues
+                paddingValues = paddingValues,
+                modifier = modifier
             )
         }
         composable<Screen.History> {
             History(
                 { navigateTo -> navHostController.navigate(navigateTo) },
-                paddingValues,
-                modifier.fillMaxSize()
+                paddingValues = paddingValues,
+                modifier = modifier
             )
         }
     }

@@ -1,5 +1,6 @@
 package com.mountech.binner.presentation.screen.request
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mountech.binner.data.database.Dao
@@ -35,17 +36,18 @@ class RequestViewModel
 
         info.let {
             _binInfo.value = info!!
-            saveInfo(dtoToDboMapper(info))
+            saveInfo(dtoToDboMapper(info, code))
         }
     }
 
     private fun saveInfo(binInfoDbo: BinInfoDbo) {
         viewModelScope.launch {
             dao.insert(binInfoDbo)
+            Log.d("SAVE TO DB", "$binInfoDbo")
         }
     }
 
-    private fun dtoToDboMapper(dto: BinInfoDto): BinInfoDbo {
+    private fun dtoToDboMapper(dto: BinInfoDto, bin: String): BinInfoDbo {
         return BinInfoDbo(
             id = Random.nextInt(),
             number = NumberInfoDbo(dto.number?.length, dto.number?.luhn),
@@ -53,7 +55,8 @@ class RequestViewModel
             type = dto.type,
             brand = dto.brand,
             country = CountryDbo(),
-            bank = BankDbo(dto.bank?.name)
+            bank = BankDbo(dto.bank?.name),
+            bin = bin
         )
     }
 }

@@ -26,7 +26,6 @@ class CharactersPagingSource(private val getCharactersListUseCase: GetCharacters
                         nextKey = page + 1,
                         prevKey = null
                     )
-
             }
         )
     }

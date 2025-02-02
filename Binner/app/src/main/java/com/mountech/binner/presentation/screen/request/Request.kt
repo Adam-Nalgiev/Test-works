@@ -1,6 +1,5 @@
 package com.mountech.binner.presentation.screen.request
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -9,10 +8,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -33,19 +31,19 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mountech.binner.R
-import com.mountech.binner.data.model.dto.BinInfoDto
 import com.mountech.binner.presentation.navigation.Screen
-import com.mountech.binner.presentation.theme.BlackDescriptionStyle
 import com.mountech.binner.presentation.theme.DarkMango
-import com.mountech.binner.presentation.theme.GrayTitleStyle
 import com.mountech.binner.presentation.theme.LightGray
 import com.mountech.binner.presentation.theme.Mango
 import com.mountech.binner.presentation.theme.Transparent
 import com.mountech.binner.presentation.theme.White
+import com.mountech.binner.presentation.ui.BinInformation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -60,7 +58,6 @@ fun Request(
     viewModel: RequestViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
-
     val bin = remember { mutableStateOf("") }  //при серьезном подходе хочется создать делегат для ограничения возможного значения
     val visibility = remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
@@ -72,13 +69,26 @@ fun Request(
             .padding(paddingValues)
             .background(Brush.verticalGradient(listOf(Mango, DarkMango)))
     ) {
+        BinsHistoryButton(
+            onNavigateTo = onNavigateTo,
+            modifier
+                .align(Alignment.TopEnd)
+                .padding(8.dp)
+        )
 
-        BinsHistoryButton(onNavigateTo = onNavigateTo, modifier = modifier.align(Alignment.TopEnd))
+        Column(
+            modifier = modifier
+                .fillMaxWidth()
+                .align(Alignment.Center),
+            verticalArrangement = Arrangement.Center
+        ) {
+            BinInputField(bin = bin, modifier = modifier.align(Alignment.CenterHorizontally))
 
-        Column(Modifier.align(Alignment.Center)) {
-            BinInputField(bin = bin, modifier.padding(bottom = 48.dp))
-
-            BinInformation(data = data.value, visibility = visibility, modifier = modifier)
+            BinInformation(
+                data = data.value,
+                visibility = visibility,
+                modifier = modifier.align(Alignment.CenterHorizontally)
+            )
 
             SendButton(
                 bin = bin,
@@ -93,10 +103,9 @@ fun Request(
 
 @Composable
 private fun BinInputField(
-    bin: MutableState<String> = remember { mutableStateOf("") },
+    bin: MutableState<String>,
     modifier: Modifier = Modifier
 ) {
-
     OutlinedTextField(
         value = bin.value,
         onValueChange = {
@@ -112,7 +121,7 @@ private fun BinInputField(
         label = { Text(text = stringResource(R.string.enter_bin)) },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         maxLines = 1,
-        modifier = modifier,
+        modifier = modifier.padding(bottom = 48.dp),
         shape = RoundedCornerShape(16.dp),
         colors = OutlinedTextFieldDefaults.colors(
             unfocusedBorderColor = White,
@@ -120,7 +129,8 @@ private fun BinInputField(
             unfocusedLabelColor = LightGray,
             focusedTextColor = White,
             unfocusedTextColor = White
-        )
+        ),
+        textStyle = TextStyle(textAlign = TextAlign.Center)
     )
 }
 
@@ -135,7 +145,7 @@ private fun SendButton(
     OutlinedButton(
         onClick = {
             scope.launch(Dispatchers.IO) {
-                viewModel.getBinInfo(bin.value)
+                if (bin.value.length == 8) viewModel.getBinInfo(bin.value)
                 dataVisibility.value = true
             }
         },
@@ -157,10 +167,10 @@ private fun BinsHistoryButton(
     onNavigateTo: (Screen) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     Button(
         onClick = { onNavigateTo(Screen.History) },
         colors = ButtonDefaults.buttonColors(containerColor = Transparent),
+        contentPadding = PaddingValues(0.dp),
         modifier = modifier
             .wrapContentSize()
             .padding(8.dp)
@@ -170,105 +180,4 @@ private fun BinsHistoryButton(
             contentDescription = stringResource(R.string.descr_history_screen)
         )
     }
-}
-
-@Composable
-private fun BinInformation(
-    data: BinInfoDto,
-    visibility: MutableState<Boolean> = remember { mutableStateOf(false) },
-    modifier: Modifier = Modifier
-) {
-    AnimatedVisibility(modifier = modifier, visible = visibility.value) {
-
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            contentPadding = PaddingValues(8.dp),
-            verticalArrangement = Arrangement.SpaceAround,
-            modifier = modifier
-        ) {
-            items(count = 8) { rowIndex ->
-                when (rowIndex) {
-                    0 -> InfoPair(
-                        titleText = stringResource(R.string.title_scheme),
-                        descrText = data.scheme!!
-                    )
-
-                    1 -> InfoPair(
-                        titleText = stringResource(R.string.title_brand),
-                        descrText = data.brand!!
-                    )
-
-                    2 -> InfoPair(
-                        titleText = stringResource(R.string.title_length),
-                        descrText = data.number?.length.toString()
-                    )
-
-                    3 -> InfoPair(
-                        titleText = stringResource(R.string.title_luhn),
-                        descrText = data.number?.luhn.toString()
-                    )
-
-                    4 -> InfoPair(
-                        titleText = stringResource(R.string.title_type),
-                        descrText = data.type!!
-                    )
-
-                    5 -> InfoPair(
-                        titleText = stringResource(R.string.title_prepaid),
-                        descrText = stringResource(R.string.no)
-                    )
-
-                    6 -> InfoPair(
-                        titleText = stringResource(R.string.title_country),
-                        descrText = data.country?.name!!
-                    )
-
-                    7 -> InfoPair(
-                        titleText = stringResource(R.string.title_bank),
-                        descrText = data.bank?.name!!
-                    )
-
-                    else -> InfoPair("-", "-")
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun InfoPair(
-    titleText: String,
-    descrText: String,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier.padding(top = 8.dp)
-    ) {
-        GrayTitleText(titleText)
-        BlackDescriptionText(descrText)
-    }
-}
-
-@Composable
-private fun GrayTitleText(
-    text: String,
-    modifier: Modifier = Modifier
-) {
-    Text(
-        text = text,
-        style = GrayTitleStyle,
-        modifier = modifier
-    )
-}
-
-@Composable
-private fun BlackDescriptionText(
-    text: String,
-    modifier: Modifier = Modifier
-) {
-    Text(
-        text = text,
-        style = BlackDescriptionStyle,
-        modifier = modifier
-    )
 }

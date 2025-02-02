@@ -50,6 +50,8 @@ dependencies {
     implementation(libs.bundles.hilt)
     ksp(libs.hilt.compiler)
 
+    implementation(libs.paging.compose)
+
     implementation(libs.bundles.retrofit)
 
     implementation(libs.bundles.navigation)
