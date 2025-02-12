@@ -18,14 +18,21 @@ serialization = "1.8.0"
 jvm = "2.1.0"
 coil = "2.7.0"
 paging = "3.3.5"
+room = "2.6.1"
 
 [bundles]
 retrofit = ["retrofit", "gson-converter", "logging-interceptor"]
 navigation = ["androidx-navigation", "androidx-navigation-runtime-ktx"]
 hilt = ["hilt", "hilt-navigation-compose"]
 coil = ["coil", "coil-compose"]
+room = ["room-ktx", "room-runtime"]
 
 [libraries]
+#Room
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room"}
+
 #Coil
 coil = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }

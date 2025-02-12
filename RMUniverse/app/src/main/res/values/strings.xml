@@ -7,7 +7,9 @@
     <string name="characters">Characters</string>
     <string name="no_characters">No more characters</string>
     <string name="error">Something went wrong. Check your network connection.</string>
+    <string name="cached_data_notification">Connection error. The saved data was shown.</string>
 
+    <string name="descr_retry_button">Retry Loading</string>
     <string name="descr_character_image">Character Image</string>
     <string name="descr_ic_location">Location Icon</string>
     <string name="descr_ic_play">Play Icon</string>

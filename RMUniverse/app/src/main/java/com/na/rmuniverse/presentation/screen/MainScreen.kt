@@ -30,9 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,6 +44,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -81,45 +80,39 @@ fun CharactersListScreen(
             .padding(paddingValues)
             .background(Color.White)
     ) {
-        Column {
+        Column(Modifier.align(Alignment.Center)) {
 
             BasicText(
                 text = stringResource(R.string.characters),
                 style = MaterialTheme.typography.titleLarge,
-                modifier = modifier.padding(start = 8.dp, top = 40.dp, bottom = 16.dp)
+                modifier = Modifier.padding(start = 8.dp, top = 40.dp, bottom = 16.dp)
             )
 
             AnimatedVisibility(
-                charactersList.itemCount == 0,
-                modifier.align(Alignment.CenterHorizontally)
+                charactersList.loadState.refresh is LoadState.Loading,
+                Modifier.align(Alignment.CenterHorizontally)
             ) {
                 LoadingProgressBar()
             }
 
-            CharactersLazyColumn(charactersList, viewModel)
+            CharactersList(charactersList, viewModel)
         }
     }
 }
 
 @Composable
-private fun CharactersLazyColumn(
+private fun CharactersList(
     charactersList: LazyPagingItems<Character>,
     viewModel: MainViewModel,
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
-    val isAtTheEndOfList by remember(listState) {
-        derivedStateOf {
-            listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index == listState.layoutInfo.totalItemsCount - 1
-        }
-    }
 
     Box {
         LazyColumn(
         state = listState,
         verticalArrangement = Arrangement.spacedBy(24.dp),
-        modifier = modifier
-            .fillMaxSize(),
+            modifier = modifier.fillMaxSize(),
         ) {
             items(charactersList.itemCount) { itemId ->
                 val character = charactersList[itemId]
@@ -137,19 +130,38 @@ private fun CharactersLazyColumn(
             }
             when (charactersList.loadState.append) {
                 is LoadState.Error -> {
-                    item { BasicText(stringResource(R.string.error), textColor = Red) }
+                    item {
+                        Box(Modifier.fillMaxWidth()) {
+                            ErrorItem(
+                                charactersList = charactersList,
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        }
+                    }
                 }
 
                 is LoadState.Loading -> {
-                    item { CircularProgressIndicator() }
+                    item {
+                        Box(
+                            Modifier.fillMaxWidth()
+                        ) {
+                            LoadingProgressBar(modifier = Modifier.align(Alignment.Center))
+                        }
+                    }
                 }
 
                 is LoadState.NotLoading -> Unit
             }
+
+            if (charactersList.loadState.refresh is LoadState.Error) {
+                item {
+                    ErrorItem(
+                        charactersList = charactersList,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+            }
         }
-        if (isAtTheEndOfList) BasicText(text = stringResource(R.string.no_characters))
-
-
     }
 }
 
@@ -326,6 +338,8 @@ private fun LocationText(
 private fun BasicText(
     text: String,
     textColor: Color = Black,
+    maxLines: Int = 1,
+    align: TextAlign = TextAlign.Start,
     style: TextStyle = MaterialTheme.typography.bodyMedium,
     overflow: TextOverflow = TextOverflow.Visible,
     modifier: Modifier = Modifier
@@ -333,7 +347,8 @@ private fun BasicText(
     Text(
         text = text,
         color = textColor,
-        maxLines = 1,
+        maxLines = maxLines,
+        textAlign = align,
         style = style,
         overflow = overflow,
         modifier = modifier
@@ -341,8 +356,48 @@ private fun BasicText(
 }
 
 @Composable
+private fun ErrorItem(charactersList: LazyPagingItems<Character>, modifier: Modifier = Modifier) {
+    Column(modifier) {
+        ErrorText()
+        RetryButton(charactersList, Modifier.align(Alignment.CenterHorizontally))
+    }
+}
+
+@Composable
+private fun ErrorText(modifier: Modifier = Modifier) {
+    Box(
+        modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        BasicText(
+            text = stringResource(R.string.error),
+            textColor = Red,
+            maxLines = 2,
+            align = TextAlign.Center,
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.align(Alignment.Center)
+        )
+    }
+}
+
+@Composable
+private fun RetryButton(listToRetry: LazyPagingItems<Character>, modifier: Modifier = Modifier) {
+    Button(
+        onClick = { listToRetry.refresh() },
+        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+        modifier = modifier
+    ) {
+        Image(
+            ImageVector.vectorResource(R.drawable.ic_restart),
+            contentDescription = stringResource(R.string.descr_retry_button)
+        )
+    }
+}
+
+@Composable
 private fun LoadingProgressBar(modifier: Modifier = Modifier) {
-    CircularProgressIndicator(modifier = modifier)
+    CircularProgressIndicator(color = Orange, modifier = modifier)
 }
 
 //Не придумал куда его еще деть
