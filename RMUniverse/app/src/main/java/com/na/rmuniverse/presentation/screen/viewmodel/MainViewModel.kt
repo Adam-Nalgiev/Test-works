@@ -23,8 +23,8 @@ class MainViewModel @Inject constructor(
 
     var characters: Flow<PagingData<Character>> =
         Pager(
-            config = PagingConfig(10),
-            initialKey = 0,
+            config = PagingConfig(20),
+            initialKey = 1,
             pagingSourceFactory = { CharactersPagingSource(getCharactersListUseCase) }
         ).flow.cachedIn(viewModelScope)
 
