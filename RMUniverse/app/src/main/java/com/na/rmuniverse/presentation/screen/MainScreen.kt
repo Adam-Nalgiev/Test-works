@@ -24,6 +24,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,6 +40,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
@@ -95,27 +99,48 @@ private fun CharactersLazyColumn(
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
+    val isAtTheEndOfList by remember(listState) {
+        derivedStateOf {
+            listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index == listState.layoutInfo.totalItemsCount - 1
+        }
+    }
 
-    LazyColumn(
+    Box {
+        LazyColumn(
         state = listState,
         verticalArrangement = Arrangement.spacedBy(24.dp),
         modifier = modifier
             .fillMaxSize(),
-    ) {
-        items(charactersList.itemCount) { itemId ->
-            val character = charactersList[itemId]
-            with(character!!) {
-                CharacterItem(
-                    imageUrl = image,
-                    name = name,
-                    origin = "$species, $gender",
-                    location = location.name,
-                    episodes = episode,
-                    status = status,
-                    viewModel = viewModel
-                )
+        ) {
+            items(charactersList.itemCount) { itemId ->
+                val character = charactersList[itemId]
+                with(character!!) {
+                    CharacterItem(
+                        imageUrl = image,
+                        name = name,
+                        origin = "$species, $gender",
+                        location = location.name,
+                        episodes = episode,
+                        status = status,
+                        viewModel = viewModel
+                    )
+                }
+            }
+            when (charactersList.loadState.append) {
+                is LoadState.Error -> {
+                    item { BasicText(stringResource(R.string.error), textColor = Red) }
+                }
+
+                is LoadState.Loading -> {
+                    item { CircularProgressIndicator() }
+                }
+
+                is LoadState.NotLoading -> Unit
             }
         }
+        if (isAtTheEndOfList) BasicText(text = stringResource(R.string.no_characters))
+
+
     }
 }
 
