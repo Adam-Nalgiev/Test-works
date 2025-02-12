@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -34,6 +34,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.LazyPagingItems
@@ -139,10 +140,8 @@ private fun CharacterItem(
         Row {
             CharacterImage(imageUrl)
 
-            CharacterInfo(name, origin, location, episodes, viewModel)
+            CharacterInfo(name, origin, location, episodes, status, viewModel)
         }
-
-        CharacterAliveStatus(status)
     }
 }
 
@@ -169,16 +168,25 @@ private fun CharacterInfo(
     origin: String,
     location: String,
     episodes: List<String>,
+    status: String,
     viewModel: MainViewModel,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
-            .padding(start = 8.dp, end = 8.dp)
-            .fillMaxHeight(),
+            .padding(start = 8.dp)
+            .fillMaxSize(),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        BasicText(text = name, style = MaterialTheme.typography.titleMedium)
+        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = modifier.fillMaxWidth()) {
+            BasicText(
+                text = name,
+                style = MaterialTheme.typography.titleMedium,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f)
+            )
+            CharacterAliveStatus(status)
+        }
 
         BasicText(text = origin)
 
@@ -207,7 +215,7 @@ private fun CharacterAliveStatus(
             )
         }
 
-        "Dead" -> Box(modifier = modifier.background(LightRed, RoundedCornerShape(16.dp))) {
+        "Dead" -> Row(modifier = modifier.background(LightRed, RoundedCornerShape(16.dp))) {
             BasicText(
                 stringResource(R.string.status_dead),
                 textColor = Red,
@@ -216,7 +224,7 @@ private fun CharacterAliveStatus(
             )
         }
 
-        else -> Box(modifier = modifier.background(LightGray, RoundedCornerShape(16.dp))) {
+        else -> Row(modifier = modifier.background(LightGray, RoundedCornerShape(16.dp))) {
             BasicText(
                 stringResource(R.string.status_unknown),
                 textColor = Gray,
@@ -279,15 +287,22 @@ private fun LocationText(
     }
 }
 
-
 @Composable
 private fun BasicText(
     text: String,
     textColor: Color = Black,
     style: TextStyle = MaterialTheme.typography.bodyMedium,
+    overflow: TextOverflow = TextOverflow.Visible,
     modifier: Modifier = Modifier
 ) {
-    Text(text = text, color = textColor, style = style, modifier = modifier)
+    Text(
+        text = text,
+        color = textColor,
+        maxLines = 1,
+        style = style,
+        overflow = overflow,
+        modifier = modifier
+    )
 }
 
 @Composable

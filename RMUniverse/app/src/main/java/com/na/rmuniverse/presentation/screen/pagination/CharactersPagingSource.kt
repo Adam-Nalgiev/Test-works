@@ -6,7 +6,9 @@ import androidx.paging.PagingState
 import com.na.rmuniverse.domain.GetCharactersListUseCase
 import com.na.rmuniverse.entity.Character
 
-class CharactersPagingSource(private val getCharactersListUseCase: GetCharactersListUseCase): PagingSource<Int, Character>() {
+class CharactersPagingSource(
+    private val getCharactersListUseCase: GetCharactersListUseCase
+): PagingSource<Int, Character>() {
     override fun getRefreshKey(state: PagingState<Int, Character>): Int = 1
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Character> {
@@ -24,10 +26,9 @@ class CharactersPagingSource(private val getCharactersListUseCase: GetCharacters
                     LoadResult.Page(
                         data = it,
                         nextKey = page + 1,
-                        prevKey = null
+                        prevKey = if (page > 1) page - 1 else null
                     )
             }
         )
     }
-
 }

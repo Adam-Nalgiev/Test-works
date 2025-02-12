@@ -16,8 +16,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             RMUniverseTheme {
-                Scaffold { innerPadding ->
-                    CharactersListScreen(paddingValues = innerPadding)
+                Scaffold {
+                    CharactersListScreen(paddingValues = it)
                 }
             }
         }
