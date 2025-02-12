@@ -2,6 +2,12 @@ package com.na.rmuniverse.presentation.screen
 
 import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +36,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -183,6 +192,7 @@ private fun CharacterImage(
         modifier = modifier
             .clip(RoundedCornerShape(40.dp))
             .size(120.dp)
+            .shimmerLoading()
     )
 }
 
@@ -333,4 +343,41 @@ private fun BasicText(
 @Composable
 private fun LoadingProgressBar(modifier: Modifier = Modifier) {
     CircularProgressIndicator(modifier = modifier)
+}
+
+//Не придумал куда его еще деть
+//Можно из него сделать плейсхолдер c шиммерингом вместо анимации загрузки для всех элементов, но я сделал только для изображений
+@Composable
+fun Modifier.shimmerLoading(
+    durationMillis: Int = 1000,
+): Modifier {
+    val label = ""
+    val transition = rememberInfiniteTransition(label = label)
+
+    val translateAnimation by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 500f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(
+                durationMillis = durationMillis,
+                easing = LinearEasing,
+            ),
+            repeatMode = RepeatMode.Restart,
+        ),
+        label = label,
+    )
+
+    return drawBehind {
+        drawRect(
+            brush = Brush.linearGradient(
+                colors = listOf(
+                    LightGray.copy(alpha = 0.2f),
+                    LightGray.copy(alpha = 1.0f),
+                    LightGray.copy(alpha = 0.2f),
+                ),
+                start = Offset(x = translateAnimation, y = translateAnimation),
+                end = Offset(x = translateAnimation + 100f, y = translateAnimation + 100f),
+            )
+        )
+    }
 }
