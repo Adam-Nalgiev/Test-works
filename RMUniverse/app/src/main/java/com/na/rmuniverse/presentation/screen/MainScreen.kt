@@ -38,6 +38,8 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -184,7 +186,7 @@ private fun CharacterItem(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row {
-            CharacterImage(imageUrl)
+            CharacterImage(imageUrl, status)
 
             CharacterInfo(name, origin, location, episodes, status, viewModel)
         }
@@ -195,12 +197,14 @@ private fun CharacterItem(
 @Composable
 private fun CharacterImage(
     imageUrl: String,
+    characterState: String,
     modifier: Modifier = Modifier
 ) {
     AsyncImage(
         model = imageUrl,
         contentDescription = stringResource(R.string.descr_character_image),
         contentScale = ContentScale.FillBounds,
+        colorFilter = getColorFilter(characterState),
         modifier = modifier
             .clip(RoundedCornerShape(40.dp))
             .size(120.dp)
@@ -398,6 +402,17 @@ private fun RetryButton(listToRetry: LazyPagingItems<Character>, modifier: Modif
 @Composable
 private fun LoadingProgressBar(modifier: Modifier = Modifier) {
     CircularProgressIndicator(color = Orange, modifier = modifier)
+}
+
+private fun getColorFilter(status: String): ColorFilter? {
+    return when (status) {
+        "Dead" -> {
+            val matrix = ColorMatrix()
+            matrix.setToSaturation(0f)
+            ColorFilter.colorMatrix(matrix)
+        }
+        else -> null
+    }
 }
 
 //Не придумал куда его еще деть

@@ -41,7 +41,6 @@ data class CharacterDbo(
     @ColumnInfo(name = "image")
     override val image: String,
 
-
     @TypeConverters(Converters::class)
     override val episode: List<String>,
 
